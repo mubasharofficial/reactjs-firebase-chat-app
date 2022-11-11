@@ -127,16 +127,111 @@ section .form {
 .home_container {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr 3fr;
+  grid-template-columns: 1fr 4fr;
   overflow: hidden;
   height: calc(100vh - 70px);
   width: 100vw;
+
 }
 .users_container {
   margin-top: 2px;
   overflow-y: auto;
   background-color: var(--color-1);
   box-shadow: 0 19px 10px 3px;
+
+}
+.add-group-memeber-section
+{
+  position: fixed;
+  height: 400px;
+  width: auto;
+  z-index: 102;
+  bottom: 110px;
+  right: 40px;
+  background-color: white;
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.add-group-memeber-section button{
+
+  border-radius: 50%;
+	width:30px;
+	height:30px;
+	background-color:#f8f8f8;
+	color:var(--btn-background);
+	border-radius:50px;
+	text-align:center;
+  font-size:20px;
+	box-shadow: 2px 2px 3px #999;
+  border:none;
+}
+
+.add-group-memeber-section button:hover{
+  
+  border-radius: 50%;
+	width:35px;
+	height:35px;
+	background-color:#f8f8f8;
+	color:var(--btn-background);
+	border-radius:50px;
+	text-align:center;
+  font-size:20px;
+	box-shadow: 2px 2px 3px #999;
+  border:none;
+
+}
+
+.group-search-form{
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+.group-search-form input{
+  color: (--btn-background);
+  width: 100%;
+  padding: 5px;
+  outline: none;
+  border: 1px solid var(--color-3);
+  border-radius: 1px;
+  font-weight: 400;
+  text-align: center;
+}
+
+.add-chat-memeber-button
+{
+  border-radius: 50%;
+  position:fixed;
+  bottom:60px;
+	right:40px;
+	width:40px;
+	height:40px;
+	background-color:var(--btn-background);
+	color:#FFF;
+	border-radius:50px;
+	text-align:center;
+  font-size:30px;
+	box-shadow: 2px 2px 3px #999;
+  z-index:100;
+  border:none;
+}
+.add-chat-memeber-button:hover
+{
+  position:fixed;
+  bottom:60px;
+	right:40px;
+  border-radius: 50%;
+	width:45px;
+	height:45px;
+	background-color:var(--btn-background);
+	color:#FFF;
+	border-radius:50px;
+	text-align:center;
+  font-size:30px;
+	box-shadow: 2px 2px 10px #999;
+  z-index:100;
+  
 }
 .user_wrapper {
   margin-bottom: 10px;

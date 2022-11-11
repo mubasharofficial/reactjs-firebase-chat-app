@@ -15,8 +15,10 @@ import {
 } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import User from "../components/User";
+import GroupChat from "../components/GroupChat";
 import MessageForm from "../components/MessageForm";
 import Message from "../components/Message";
+import AddChatMemeber from "../components/AddChatMemeber";
 
 const Home = () => {
   const [users, setUsers] = useState([]);
@@ -132,6 +134,7 @@ const Home = () => {
                   ))
                 : null}
             </div>
+
             <MessageForm
               handleSubmit={handleSubmit}
               text={text}
@@ -141,8 +144,10 @@ const Home = () => {
           </>
         ) : (
           <h3 className="no_conv">Select a user to start conversation</h3>
-        )}
+        )}   
+         <AddChatMemeber />     
       </div>
+   
     </div>
   );
 };
