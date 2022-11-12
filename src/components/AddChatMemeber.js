@@ -37,7 +37,7 @@ const AddChatMemeber = () => {
            searchBoxStatus?
            <div className="add-group-memeber-section">
                 <div className='group-search-form'><input type="text" name='search_users' /></div>
-                 <button onClick={()=>addNewGroup()}>+</button>
+                 <button onClick={()=>addNewGroupt()}>+</button>
             </div>:null
         }
         <button className='add-chat-memeber-button' onClick={()=>searchBoxStatus?setSearchBoxSatus(false):setSearchBoxSatus(true)}>+</button>
