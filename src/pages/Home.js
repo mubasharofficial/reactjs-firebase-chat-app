@@ -33,10 +33,9 @@ const Home = () => {
   const [img, setImg] = useState("");
   const [msgs, setMsgs] = useState([]);
   const [chatGroups, setChatGroups] = useState([]);
+  const [swtichChat,setSwitchChat] = useState(false);
 
   const user1 = auth.currentUser.uid;
-
-
   useEffect( async()=> {
     const querySnapshot = await getDocs(collection(db, "groupchat"));
     const tempUser = []
@@ -93,28 +92,6 @@ const Home = () => {
   const selectgroup = async (group) => {
     console.log(group);
     setGroupSelectedChat(group);
-      // const user2 = group.uid;
-      // const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
-  
-      // const msgsRef = collection(db, "messages", id, "chat");
-      // const q = query(msgsRef, orderBy("createdAt", "asc"));
-  
-      // onSnapshot(q, (querySnapshot) => {
-      //   let msgs = [];
-      //   querySnapshot.forEach((doc) => {
-      //     msgs.push(doc.data());
-      //   });
-      //   setMsgs(msgs);
-      // });
-  
-  
-      // // get last message b/w logged in user and selected user
-      // const docSnap = await getDoc(doc(db, "lastMsg", id));
-      // // if last message exists and message is from selected user
-      // if (docSnap.data() && docSnap.data().from !== user1) {
-      //   // update last message doc, set unread to false
-      //   await updateDoc(doc(db, "lastMsg", id), { unread: false });
-      // }
     };
   
     for (const [key, value] of Object.entries(chatGroups)) {
@@ -124,6 +101,9 @@ const Home = () => {
     
   const handleSubmit = async (e) => 
   {
+    setSwitchChat(true);
+    groupSelectedChat([])
+
      e.preventDefault();
 
     const user2 = chat.uid;
@@ -162,6 +142,8 @@ const Home = () => {
 
   const handleSend = async (e) => 
   {
+    setSwitchChat(true);
+    setMsgs([]);
     e.preventDefault();
 
     if (img)
@@ -207,24 +189,30 @@ const Home = () => {
       });
     }
 
-    // await updateDoc(doc(db, "userChats", currentUser.uid),
-    //  {
-    //   [data.chatId + ".lastMessage"]: {
-    //     text,
-    //   },
-    //   [data.chatId + ".date"]: serverTimestamp(),
-    // });
+    const docRef = doc(db, "groupchat", groupSelectedChat.id);
+    const docSnap = await getDoc(docRef);
 
-    // await updateDoc(doc(db, "userChats", data.user.uid), {
-    //   [data.chatId + ".lastMessage"]: {
-    //     text,
-    //   },
-    //   [data.chatId + ".date"]: serverTimestamp(),
-    // });
+    if (docSnap.exists()) {
+      setGroupSelectedChat(docSnap.data())
+    } else {
+      // doc.data() will be undefined in this case
+      console.log("No such document!");
+    }
 
     setText("");
-    setImg(null);
+    setImg("");
   };
+
+  var arr1 = [{ id: 1, username: 'fred' }, 
+  { id: 2, username: 'bill'}, 
+  { id: 3, username: 'ted' }];
+
+function userExists(username,groupMemberarray) {
+ 
+  return groupMemberarray.some(function(el) {
+    return el.value === username;
+  }); 
+}
 
   return (
     <div className="home_container">
@@ -246,48 +234,47 @@ const Home = () => {
         </div>
         {
         Object.entries(chatGroups)?.sort((a, b) => b[1].date - a[1].date).map((group) => (
+          userExists(user1,group[1].groupMemeber)===true?
           <GroupList key={group.id}  
           group={group[1]} 
           groupName={group[1].groupName} 
           selectgroup={selectgroup}
-          />
+          />:null
         ))
         }
 
       </div>
       <div className="messages_container">
-        {
-        
-        chat ? (
-          <>
-            <div className="messages_user">
-              <h3>{chat.name}</h3>
-            </div>
-            <div className="messages">
-              {msgs.length
-                ? msgs.map((msg, i) => (
-                    <Message key={i} msg={msg} user1={user1} />
-                  ))
-                : null}
-            </div>
 
-            <MessageForm
-              handleSubmit={handleSubmit}
-              text={text}
-              setText={setText}
-              setImg={setImg}
-            />
-          </>
-        ) : (
+        {  
+        chat? (
+              <>
+                <div className="messages_user">
+                  <h3>{chat.name}</h3>
+                </div>
+                <div className="messages">
+                  {msgs.length
+                    ? msgs.map((msg, i) => (
+                        <Message key={i} msg={msg} user1={user1} />
+                      ))
+                    : null}
+                </div>
+
+                <MessageForm
+                  handleSubmit={handleSubmit}
+                  text={text}
+                  setText={setText}
+                  setImg={setImg}
+                />
+            </>
+        ) 
+        : (
           <h3 className="no_conv">Select a user to start conversation</h3>
         )
 
         }
 
-
-
         {
-
         groupSelectedChat? (
                     <>
                       <div className="messages_user">
@@ -295,7 +282,7 @@ const Home = () => {
                       </div>
                       <div className="messages">
                         {groupSelectedChat.messages.length
-                          ? groupSelectedChat.messages.map((msg, i) => (
+                          ? groupSelectedChat.messages.map((msg, i) => (                        
                               <GroupMessage key={i} msg={msg} user1={user1} />
                             ))
                           : null}
@@ -310,6 +297,7 @@ const Home = () => {
                   ) : (
                     <h3 className="no_conv">Select a user to start conversation</h3>
                   )
+
         }     
          
       </div>
