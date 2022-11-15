@@ -43,7 +43,7 @@ const GroupChat = () => {
     const uuid= uuidv4();
     try{
      setDoc(doc(db, "groupchat", uuid), {
-      
+      id:uuid,
        groupAdmin: currentuser,
        groupName: groupName,
        groupMemeber:selectedUsers

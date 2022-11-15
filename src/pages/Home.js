@@ -81,8 +81,6 @@ const Home = () => {
       setMsgs(msgs);
     });
 
-    
-
     // get last message b/w logged in user and selected user
     const docSnap = await getDoc(doc(db, "lastMsg", id));
     // if last message exists and message is from selected user
@@ -92,12 +90,9 @@ const Home = () => {
     }
   };
 
-
   const selectgroup = async (group) => {
     console.log(group);
     setGroupSelectedChat(group);
-    console.log('statchatge',groupSelectedChat)
-  
       // const user2 = group.uid;
       // const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
   
@@ -122,7 +117,11 @@ const Home = () => {
       // }
     };
   
+    for (const [key, value] of Object.entries(chatGroups)) {
+      console.log(value);
+    }
 
+    
   const handleSubmit = async (e) => 
   {
      e.preventDefault();
@@ -168,7 +167,6 @@ const Home = () => {
     if (img)
     {
       const storageRef = ref(storage, uuid());
-
       const uploadTask = uploadBytesResumable(storageRef, img);
 
       uploadTask.on(
@@ -177,7 +175,7 @@ const Home = () => {
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then(async (downloadURL) => {
-            await updateDoc(doc(db, "groupchat", groupSelectedChat), {
+            await updateDoc(doc(db, "groupchat", groupSelectedChat.id), {
               messages: arrayUnion(
                 {
                 id: uuid(),
@@ -195,7 +193,7 @@ const Home = () => {
     }
      else
     {
-      await updateDoc(doc(db, "groupchat", groupSelectedChat.uid), {
+      await updateDoc(doc(db, "groupchat", groupSelectedChat.id), {
         messages: arrayUnion(
           {
             id: uuid(),
@@ -228,8 +226,6 @@ const Home = () => {
     setImg(null);
   };
 
-  console.log(groupSelectedChat)
-
   return (
     <div className="home_container">
       <div className="users_container">
@@ -250,11 +246,11 @@ const Home = () => {
         </div>
         {
         Object.entries(chatGroups)?.sort((a, b) => b[1].date - a[1].date).map((group) => (
-         <GroupList key={group.id}  
-         group={group[1]} 
-         groupName={group[1].groupName} 
-         selectgroup={selectgroup}
-         />
+          <GroupList key={group.id}  
+          group={group[1]} 
+          groupName={group[1].groupName} 
+          selectgroup={selectgroup}
+          />
         ))
         }
 
