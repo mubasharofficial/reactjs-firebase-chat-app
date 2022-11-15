@@ -331,6 +331,29 @@ background-color: transparent;
   display: flex;
   align-items: center;
 }
+.chat-group{
+ 
+  text-align: center;
+  background-color: white;
+  padding: 4;
+  margin-bottom: 5px;
+  padding: 10px;
+  border-bottom: 2px solid gray;
+
+}
+.chat-group p{
+  margin-top: 5%;
+  font-weight: 900;
+  font-size: x-large;
+}
+.chat-group img{
+
+  margin-top: 3%;
+  border-radius: 50%;
+  border: 1px solid rgb(79, 197, 79);
+  
+
+}
 .message_form input {
   width: 65vw;
   margin: 0px 10px 10px;

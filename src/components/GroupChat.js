@@ -13,30 +13,60 @@ import {
   orderBy, startAt, endAt,onSnapshot 
 } from "firebase/firestore";
 
-
-import { v4 as uid } from "uuid";
+import { v4 as uuidv4 } from 'uuid';
 import { db, auth } from "../firebase";
 import swal from 'sweetalert';
 import Select from 'react-select';
 const GroupChat = () => {
-
   const currentuser = auth.currentUser.uid;
   const [username, setUsername] = useState("");
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
   const [err, setErr] = useState(false);
+  const [errMessage,setErrMessage]=useState();
   const [selectedUsers, setSelectedUsers] = useState();
   const [searchUser,setSearchUser] = useState([]);
-  const [groupName,setGroupName]= useState();
+  const [groupName,setGroupName]= useState("");
   const [searchBoxStatus,setSearchBoxSatus] = useState(false);
 
-  const getGroupUserIds =()=>
+  // const getGroupUserIds = ()=>
+  // {
+  
+  //   let users = new Array();
+  //   selectedUsers.map((user)=>{
+  //     users.push({user:user.value,readStatus:false});
+  //   })
+  //   users.push({user:currentuser,readStatus:false});
+  // }
+
+   const  createNewChatDocument =(groupName)=>
   {
-    let users = new Array();
-    selectedUsers.map((user)=>{
-      users.push({user:user.value,readStatus:false});
-    })
-    users.push({user:currentuser,readStatus:false});
-    return users;
+    const uuid= uuidv4();
+    try{
+     setDoc(doc(db, "groupchat", uuid), {
+      
+       groupAdmin: currentuser,
+       groupName: groupName,
+       groupMemeber:selectedUsers
+               ,
+                messages:[
+                 {senderId:currentuser,
+                  senderName:'Mobi',
+                  text:'group create by Mobi',
+                  createdAt: Timestamp.fromDate(new Date()),
+                  media:"",
+                }
+                 ],
+       createdAt: Timestamp.fromDate(new Date()),
+       groupstatus: false,
+     });
+     setGroupName("");
+     setSelectedUsers([]);
+    }
+     catch(err)
+     {
+        setErr(true);
+        setErrMessage(err);
+     }
   }
 
   function handleSelect(e) 
@@ -44,13 +74,11 @@ const GroupChat = () => {
       setSelectedUsers(e)
   }
   const addNewGroup = ()=>{  
-    
-    getGroupUserIds();
       swal("Enter Chat Room Name:", {
           content: "input",
         })
         .then((value) => {
-          //swal(`You typed: ${value}`);
+          setGroupName(value)
           swal({
               title: "Are you sure to Create?",
               text: value,
@@ -58,20 +86,12 @@ const GroupChat = () => {
               buttons: true,
               dangerMode: false,
             })
-            .then((willCreate) => {
-              if (willCreate) {
-
-                 setDoc(doc(db, "group", uid), {
-                  groupAdmin: currentuser,
-                  groupName:groupName,
-                  groupMemeber:getGroupUserIds(),
-                  createdAt: Timestamp.fromDate(new Date()),
-                  isOnline: true,
-                });
-
+            .then(  (willCreate)=> {
+              if (willCreate) 
+                {
                 swal("Poof! Your Group '"+value+"' Created Successfully!",{icon: "success",});
-                setGroupName(value)
                 setSearchBoxSatus(true)
+                createNewChatDocument(groupName);
               } else {
                 swal("You have Cancel  Group Creation");
               }
@@ -98,7 +118,7 @@ const GroupChat = () => {
     try {
       const querySnapshot = await getDocs(q);
       querySnapshot.forEach((doc) => {
-        setSearchUser([...searchUser,{value:doc.id,label:doc.data().name}])
+      setSearchUser([...searchUser,{value:doc.id,label:doc.data().name}])
     });
     
     } catch (err) {
@@ -148,8 +168,8 @@ const GroupChat = () => {
                                                     isSearchable={true}
                                                     isMulti
                                                 />
-                                    </div>
-                                    <button onClick={addNewGroup}>Add Group</button>
+                                    </div><br/>
+                                    <button onClick={()=>addNewGroup()}>Add Group</button>
                             </div>
                 </div>:null
             }
