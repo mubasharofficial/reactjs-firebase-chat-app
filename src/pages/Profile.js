@@ -16,7 +16,6 @@ const Profile = () => {
   const [img, setImg] = useState("");
   const [user, setUser] = useState();
   const history = useHistory("");
-
   useEffect(() => {
     getDoc(doc(db, "users", auth.currentUser.uid)).then((docSnap) => {
       if (docSnap.exists) {

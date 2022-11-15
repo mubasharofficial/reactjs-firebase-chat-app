@@ -18,7 +18,6 @@ import User from "../components/User";
 import GroupChat from "../components/GroupChat";
 import MessageForm from "../components/MessageForm";
 import Message from "../components/Message";
-import AddChatMemeber from "../components/AddChatMemeber";
 
 const Home = () => {
   const [users, setUsers] = useState([]);
@@ -111,6 +110,7 @@ const Home = () => {
   return (
     <div className="home_container">
       <div className="users_container">
+        <GroupChat />
         {users.map((user) => (
           <User
             key={user.uid}
@@ -145,7 +145,7 @@ const Home = () => {
         ) : (
           <h3 className="no_conv">Select a user to start conversation</h3>
         )}   
-         <AddChatMemeber />     
+         
       </div>
    
     </div>

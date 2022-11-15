@@ -46,7 +46,7 @@ const Register = () => {
         name,
         email,
         createdAt: Timestamp.fromDate(new Date()),
-        isOnline: true,
+        isOnline: false,
       });
       setData({
         name: "",
