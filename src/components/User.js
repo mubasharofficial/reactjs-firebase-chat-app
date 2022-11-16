@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Img from "../image1.jpg";
 import { onSnapshot, doc } from "firebase/firestore";
 import { db } from "../firebase";
+import iphoneNotificationBell from '../assets/noteficationsbells/iphone_sms_bell.mp3';
 
 const User = ({ user1, user, selectUser, chat }) => {
   const user2 = user?.uid;
@@ -15,6 +16,10 @@ const User = ({ user1, user, selectUser, chat }) => {
 
     return () => unsub();
   }, []);
+  const playBell=(url)=>{
+    const audio = new Audio(url);
+    audio.play();
+  }
 
   return (
     <>
@@ -24,9 +29,11 @@ const User = ({ user1, user, selectUser, chat }) => {
           <div className="user_detail">
             <img src={user.avatar || Img} alt="avatar" className="avatar" />
             <h6>{user.name}</h6>
-            {data?.from !== user1 && data?.unread && (
-              <small className="unread">New</small>
-            )}
+            {data?.from != user1 && data?.unread?playBell(iphoneNotificationBell):null}
+            {
+            data?.from !== user1 && data?.unread && 
+            (<small className="unread">New</small> )
+            }
           </div>
           <div
             className={`user_status ${user.isOnline ? "online" : "offline"}`}

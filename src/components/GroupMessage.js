@@ -13,7 +13,7 @@ const GroupMessage = ({ msg, user1 }) => {
       ref={scrollRef}
     >
       <p className={msg.senderId === user1 ? "me" : "friend"}>
-        <strong></strong>
+      <strong>{msg.senderId != user1 ? msg.senderName:null}</strong><br/>
         {msg.media ? <img src={msg.media} alt={msg.text} /> : null}
         {msg.text}
         <br />

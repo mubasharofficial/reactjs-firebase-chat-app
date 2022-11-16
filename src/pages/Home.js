@@ -27,8 +27,10 @@ import MessageForm from "../components/MessageForm";
 import Message from "../components/Message";
 import GroupMessage from "../components/GroupMessage";
 import groupImage from '../assets/group.png';
+import iphoneNotificationBell from '../assets/noteficationsbells/iphone_sms_bell.mp3';
 
 const Home = () => {
+  const [CurrenUserData,setCurrenUserData] =  useState();
   const [users, setUsers] = useState([]);
   const [chat, setChat] = useState("");
   const [groupSelectedChat, setGroupSelectedChat] = useState();
@@ -40,8 +42,8 @@ const Home = () => {
 
   const user1 = auth.currentUser.uid;
 
+
   useEffect(() => {
-    
     const usersRef = collection(db, "groupchat");
     // create query object
     const q = query(usersRef, where("id", "not-in", ['ba68e485-ac05-1111-b0e3-ce4ac4e31ead']));
@@ -71,14 +73,17 @@ const Home = () => {
     return () => unsub();
   }, []);
 
-  
+  const playBell=(url)=>{
+
+    const audio = new Audio(url);
+    audio.play();
+  }
+
   const selectUser = async (user) =>
   {
- 
   setChat(user);
     const user2 = user.uid;
     const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
-
     const msgsRef = collection(db, "messages", id, "chat");
     const q = query(msgsRef, orderBy("createdAt", "asc"));
 
@@ -181,7 +186,7 @@ const Home = () => {
                 {
                 id: uuid(),
                 senderId:user1,
-                sendName:'static value',
+                sendName:CurrenUserData.name,
                 text,
                 createdAt: Timestamp.fromDate(new Date()),
                 media:downloadURL,
@@ -222,15 +227,20 @@ const Home = () => {
     setText("");
     setImg("");
   };
-//   const getUserInfo= ()=>{
-//     const docRef = doc(db, "users", "0RbMABKDB2gwmAyCQ8ea9hBfmW82");
-//     try {
-//       const doc =  getDocFromCache(docRef);
-//       console.log("Cached document data:", doc.data());
-//     } catch (e) {
-//       console.log("Error getting cached document:", e);
-//     }
-//   }
+  
+  const getUserInfo= async()=>{
+    const docRef = doc(db, "users", user1);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          //console.log("Document data:", docSnap.data());
+          setCurrenUserData(docSnap.data())
+        } else {
+          setCurrenUserData([]);
+          // doc.data() will be undefined in this case
+          //console.log("No such document!");
+        }
+  }
 
 function userExists(username,groupMemberarray) {
  
@@ -307,6 +317,7 @@ function userExists(username,groupMemberarray) {
                   ))
                 : null}
             </div>
+            <button onClick={()=>playBell(iphoneNotificationBell)}>bell test</button>
             <MessageForm
               handleSubmit={handleSend}
               text={text}
