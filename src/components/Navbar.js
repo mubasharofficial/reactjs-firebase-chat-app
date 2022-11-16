@@ -9,7 +9,6 @@ import { useHistory } from "react-router-dom";
 const Navbar = () => {
   const history = useHistory();
   const { user } = useContext(AuthContext);
-
   const handleSignout = async () => {
     await updateDoc(doc(db, "users", auth.currentUser.uid), {
       isOnline: false,

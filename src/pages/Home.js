@@ -14,7 +14,10 @@ import {
   getDoc,
   updateDoc,
   arrayUnion,
-} from "firebase/firestore";
+  getDocFromCache,
+}
+from "firebase/firestore";
+
 import { ref, getDownloadURL, uploadBytes,uploadBytesResumable } from "firebase/storage";
 import { v4 as uuid } from 'uuid';
 import User from "../components/User";
@@ -36,14 +39,21 @@ const Home = () => {
   const [swtichChat,setSwitchChat] = useState(1);
 
   const user1 = auth.currentUser.uid;
-  useEffect( async()=> {
-    const querySnapshot = await getDocs(collection(db, "groupchat"));
-    const tempUser = []
-    querySnapshot.forEach((doc) => {
-      tempUser.push(doc.data())
-    });
-    setChatGroups(tempUser);
 
+  useEffect(() => {
+    
+    const usersRef = collection(db, "groupchat");
+    // create query object
+    const q = query(usersRef, where("id", "not-in", ['ba68e485-ac05-1111-b0e3-ce4ac4e31ead']));
+    // execute query
+    const unsub = onSnapshot(q, (querySnapshot) => {
+      let users = [];
+      querySnapshot.forEach((doc) => {
+        users.push(doc.data());
+      });
+      setChatGroups(users);
+    });
+    return () => unsub();
   }, []);
 
   useEffect(() => {
@@ -61,11 +71,10 @@ const Home = () => {
     return () => unsub();
   }, []);
 
-
   
   const selectUser = async (user) =>
   {
-  setSwitchChat(1);
+ 
   setChat(user);
     const user2 = user.uid;
     const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
@@ -73,14 +82,15 @@ const Home = () => {
     const msgsRef = collection(db, "messages", id, "chat");
     const q = query(msgsRef, orderBy("createdAt", "asc"));
 
-    onSnapshot(q, (querySnapshot) => {
+    onSnapshot(q, (querySnapshot) => 
+    {
       let msgs = [];
       querySnapshot.forEach((doc) => {
         msgs.push(doc.data());
       });
       setMsgs(msgs);
     });
-
+    setSwitchChat(1);
     // get last message b/w logged in user and selected user
     const docSnap = await getDoc(doc(db, "lastMsg", id));
     // if last message exists and message is from selected user
@@ -91,21 +101,32 @@ const Home = () => {
   };
 
   const selectgroup = async (group) => {
-    setSwitchChat(2);
-    console.log(group);
+
     setGroupSelectedChat(group);
+    const usersRef = collection(db, "groupchat");
+    // create query object
+    const q = query(usersRef, where("id", "in", [group.id]));
+    console.log(group.id);
+    // execute query
+    const unsub =  onSnapshot(q, (querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        setGroupSelectedChat(doc.data());
+      });
+    });
+    console.log(groupSelectedChat)
+    setSwitchChat(2);
+    return () => unsub();
+   
     };
   
-    for (const [key, value] of Object.entries(chatGroups)) {
-      console.log(value);
-    }
-
+    // for (const [key, value] of Object.entries(chatGroups)) {
+    //   console.log(value);
+    // }
     
   const handleSubmit = async (e) => 
   {
      e.preventDefault();
      setSwitchChat(1);
-
     const user2 = chat.uid;
     const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
     let url;
@@ -160,6 +181,7 @@ const Home = () => {
                 {
                 id: uuid(),
                 senderId:user1,
+                sendName:'static value',
                 text,
                 createdAt: Timestamp.fromDate(new Date()),
                 media:downloadURL,
@@ -178,6 +200,7 @@ const Home = () => {
           {
             id: uuid(),
             senderId:user1,
+            sendName:'static user',
             text,
             createdAt: Timestamp.fromDate(new Date()),
             media:"",
@@ -199,6 +222,15 @@ const Home = () => {
     setText("");
     setImg("");
   };
+//   const getUserInfo= ()=>{
+//     const docRef = doc(db, "users", "0RbMABKDB2gwmAyCQ8ea9hBfmW82");
+//     try {
+//       const doc =  getDocFromCache(docRef);
+//       console.log("Cached document data:", doc.data());
+//     } catch (e) {
+//       console.log("Error getting cached document:", e);
+//     }
+//   }
 
 function userExists(username,groupMemberarray) {
  
@@ -206,8 +238,6 @@ function userExists(username,groupMemberarray) {
     return el.value === username;
   }); 
 }
-
-console.log("test state of user",swtichChat)
 
   return (
     <div className="home_container">
@@ -228,6 +258,7 @@ console.log("test state of user",swtichChat)
              <img src={groupImage} width="50" height="50" />
         </div>
         {
+
         Object.entries(chatGroups)?.sort((a, b) => b[1].date - a[1].date).map((group) => (
           userExists(user1,group[1].groupMemeber)===true?
           <GroupList key={group.id}  
@@ -236,13 +267,14 @@ console.log("test state of user",swtichChat)
           selectgroup={selectgroup}
           />:null
         ))
+
         }
 
       </div>
       <div className="messages_container">
 
         {  
-        swtichChat==1? (
+        swtichChat===1? (
               <>
                 <div className="messages_user">
                   <h3>{chat.name}</h3>
@@ -263,13 +295,13 @@ console.log("test state of user",swtichChat)
                 />
             </>
         ) 
-        :swtichChat==2? (
+        :swtichChat===2? (
           <>
             <div className="messages_user">
               <h3>{groupSelectedChat.groupName}</h3>
             </div>
             <div className="messages">
-              {groupSelectedChat.messages.length
+              {groupSelectedChat
                 ? groupSelectedChat.messages.map((msg, i) => (                        
                     <GroupMessage key={i} msg={msg} user1={user1} />
                   ))

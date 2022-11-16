@@ -25,23 +25,24 @@ const GroupChat = () => {
   const [errMessage,setErrMessage]=useState();
   const [selectedUsers, setSelectedUsers] = useState();
   const [searchUser,setSearchUser] = useState([]);
-  const [groupname,setGroupName]= useState("");
+  const [groupName,setGroupName]= useState();
   const [searchBoxStatus,setSearchBoxSatus] = useState(false);
-
-   const  createNewChatDocument =()=>
+   const  createNewChatDocument = async(value)=>
   {
     const uuid= uuidv4();
     try{
-     setDoc(doc(db, "groupchat", uuid), {
+      selectedUsers.push({label:'Group Admin',value:currentuser});
+      
+      let unsub =  await  setDoc(doc(db, "groupchat", uuid), {
       id:uuid,
        groupAdmin: currentuser,
-       groupName: groupname,
+       groupName: value,
        groupMemeber:selectedUsers
                ,
                 messages:[
                  {senderId:currentuser,
-                  senderName:'Mobi',
-                  text:'group create by Mobi',
+                  senderName:'Group Admin',
+                  text:'group create by Group Admin',
                   createdAt: Timestamp.fromDate(new Date()),
                   media:"",
                 }
@@ -49,8 +50,10 @@ const GroupChat = () => {
        createdAt: Timestamp.fromDate(new Date()),
        groupstatus: false,
      });
-     
      setSelectedUsers([]);
+     return () => unsub();
+     
+     
     }
      catch(err)
      {
@@ -79,11 +82,11 @@ const GroupChat = () => {
             .then(  (willCreate)=> {
               if (willCreate) 
                 {
-                  
+
                 swal("Poof! Your Group '"+value+"' Created Successfully!",{icon: "success",});
                 setSearchBoxSatus(true)
-                setGroupName(value)
-                createNewChatDocument();
+                createNewChatDocument(value);
+
               } else {
                 swal("You have Cancel  Group Creation");
               }
@@ -122,19 +125,28 @@ const GroupChat = () => {
   {
     setUsername(e.target.value);
     handleFireBaseSearch(username);
-
   }
   useEffect( async()=> {
-    const querySnapshot = await getDocs(collection(db, "users"));
+    
     const tempUser = []
-    querySnapshot.forEach((doc) => {
-      tempUser.push({ value: doc.id, label:doc.data().name})
-    });
-     setSearchUser(tempUser);
+    const q = query(
+      collection(db, "users"),
+      where("uid", "!=", currentuser)
+    );
+    
+    try {
+      const querySnapshot = await getDocs(q);
+      querySnapshot.forEach((doc) => {
+        tempUser.push({ value: doc.id, label:doc.data().name})
+      });
+      setSearchUser(tempUser);
+    } catch (err) {
+      setErr(true);
+    }
 
   }, []);
 
-  console.log('groupname----<',groupname)
+
   return (
     <>
             <div className="d-flex justify-content-between user-chat-head  jext-justify p-3">

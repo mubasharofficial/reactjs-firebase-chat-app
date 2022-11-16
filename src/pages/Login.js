@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useState,useContext } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../firebase";
 import { updateDoc, doc } from "firebase/firestore";
 import { useHistory } from "react-router-dom";
-
 const Login = () => {
   const [data, setData] = useState({
     email: "",
@@ -11,6 +10,7 @@ const Login = () => {
     error: null,
     loading: false,
   });
+  
   const history = useHistory();
   const { email, password, error, loading } = data;
 
@@ -36,6 +36,7 @@ const Login = () => {
         error: null,
         loading: false,
       });
+      
       history.replace("/");
     } catch (err) {
       setData({ ...data, error: err.message, loading: false });

@@ -1,4 +1,5 @@
 import "./App.css";
+import React,{useState} from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Navbar from "./components/Navbar";
@@ -7,9 +8,12 @@ import Login from "./pages/Login";
 import Profile from './pages/Profile'
 import AuthProvider from "./context/auth";
 import PrivateRoute from "./components/PrivateRoute";
+import UserInfo from './context/UserInfo';
 
 function App() {
+  let  userInfoState = useState() //[count, setCount]
   return (
+    <UserInfo.Provider value={userInfoState}>
     <AuthProvider>
       <BrowserRouter>
         <Navbar />
@@ -21,6 +25,7 @@ function App() {
         </Switch>
       </BrowserRouter>
     </AuthProvider>
+ </UserInfo.Provider>
   );
 }
 
