@@ -25,27 +25,17 @@ const GroupChat = () => {
   const [errMessage,setErrMessage]=useState();
   const [selectedUsers, setSelectedUsers] = useState();
   const [searchUser,setSearchUser] = useState([]);
-  const [groupName,setGroupName]= useState("");
+  const [groupname,setGroupName]= useState("");
   const [searchBoxStatus,setSearchBoxSatus] = useState(false);
 
-  // const getGroupUserIds = ()=>
-  // {
-  
-  //   let users = new Array();
-  //   selectedUsers.map((user)=>{
-  //     users.push({user:user.value,readStatus:false});
-  //   })
-  //   users.push({user:currentuser,readStatus:false});
-  // }
-
-   const  createNewChatDocument =(groupName)=>
+   const  createNewChatDocument =()=>
   {
     const uuid= uuidv4();
     try{
      setDoc(doc(db, "groupchat", uuid), {
       id:uuid,
        groupAdmin: currentuser,
-       groupName: groupName,
+       groupName: groupname,
        groupMemeber:selectedUsers
                ,
                 messages:[
@@ -59,7 +49,7 @@ const GroupChat = () => {
        createdAt: Timestamp.fromDate(new Date()),
        groupstatus: false,
      });
-     setGroupName("");
+     
      setSelectedUsers([]);
     }
      catch(err)
@@ -78,7 +68,7 @@ const GroupChat = () => {
           content: "input",
         })
         .then((value) => {
-          setGroupName(value)
+         
           swal({
               title: "Are you sure to Create?",
               text: value,
@@ -89,9 +79,11 @@ const GroupChat = () => {
             .then(  (willCreate)=> {
               if (willCreate) 
                 {
+                  
                 swal("Poof! Your Group '"+value+"' Created Successfully!",{icon: "success",});
                 setSearchBoxSatus(true)
-                createNewChatDocument(groupName);
+                setGroupName(value)
+                createNewChatDocument();
               } else {
                 swal("You have Cancel  Group Creation");
               }
@@ -142,6 +134,7 @@ const GroupChat = () => {
 
   }, []);
 
+  console.log('groupname----<',groupname)
   return (
     <>
             <div className="d-flex justify-content-between user-chat-head  jext-justify p-3">

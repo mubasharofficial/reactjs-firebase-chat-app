@@ -33,7 +33,7 @@ const Home = () => {
   const [img, setImg] = useState("");
   const [msgs, setMsgs] = useState([]);
   const [chatGroups, setChatGroups] = useState([]);
-  const [swtichChat,setSwitchChat] = useState(false);
+  const [swtichChat,setSwitchChat] = useState(1);
 
   const user1 = auth.currentUser.uid;
   useEffect( async()=> {
@@ -63,9 +63,10 @@ const Home = () => {
 
 
   
-  const selectUser = async (user) => {
+  const selectUser = async (user) =>
+  {
+  setSwitchChat(1);
   setChat(user);
-
     const user2 = user.uid;
     const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
 
@@ -90,6 +91,7 @@ const Home = () => {
   };
 
   const selectgroup = async (group) => {
+    setSwitchChat(2);
     console.log(group);
     setGroupSelectedChat(group);
     };
@@ -101,10 +103,8 @@ const Home = () => {
     
   const handleSubmit = async (e) => 
   {
-    setSwitchChat(true);
-    groupSelectedChat([])
-
      e.preventDefault();
+     setSwitchChat(1);
 
     const user2 = chat.uid;
     const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
@@ -142,10 +142,8 @@ const Home = () => {
 
   const handleSend = async (e) => 
   {
-    setSwitchChat(true);
-    setMsgs([]);
     e.preventDefault();
-
+   
     if (img)
     {
       const storageRef = ref(storage, uuid());
@@ -191,7 +189,6 @@ const Home = () => {
 
     const docRef = doc(db, "groupchat", groupSelectedChat.id);
     const docSnap = await getDoc(docRef);
-
     if (docSnap.exists()) {
       setGroupSelectedChat(docSnap.data())
     } else {
@@ -203,16 +200,14 @@ const Home = () => {
     setImg("");
   };
 
-  var arr1 = [{ id: 1, username: 'fred' }, 
-  { id: 2, username: 'bill'}, 
-  { id: 3, username: 'ted' }];
-
 function userExists(username,groupMemberarray) {
  
   return groupMemberarray.some(function(el) {
     return el.value === username;
   }); 
 }
+
+console.log("test state of user",swtichChat)
 
   return (
     <div className="home_container">
@@ -247,7 +242,7 @@ function userExists(username,groupMemberarray) {
       <div className="messages_container">
 
         {  
-        chat? (
+        swtichChat==1? (
               <>
                 <div className="messages_user">
                   <h3>{chat.name}</h3>
@@ -268,35 +263,32 @@ function userExists(username,groupMemberarray) {
                 />
             </>
         ) 
-        : (
+        :swtichChat==2? (
+          <>
+            <div className="messages_user">
+              <h3>{groupSelectedChat.groupName}</h3>
+            </div>
+            <div className="messages">
+              {groupSelectedChat.messages.length
+                ? groupSelectedChat.messages.map((msg, i) => (                        
+                    <GroupMessage key={i} msg={msg} user1={user1} />
+                  ))
+                : null}
+            </div>
+            <MessageForm
+              handleSubmit={handleSend}
+              text={text}
+              setText={setText}
+              setImg={setImg}
+            />
+          </>
+        ) : (
           <h3 className="no_conv">Select a user to start conversation</h3>
         )
-
         }
 
         {
-        groupSelectedChat? (
-                    <>
-                      <div className="messages_user">
-                        <h3>{groupSelectedChat.groupName}</h3>
-                      </div>
-                      <div className="messages">
-                        {groupSelectedChat.messages.length
-                          ? groupSelectedChat.messages.map((msg, i) => (                        
-                              <GroupMessage key={i} msg={msg} user1={user1} />
-                            ))
-                          : null}
-                      </div>
-                      <MessageForm
-                        handleSubmit={handleSend}
-                        text={text}
-                        setText={setText}
-                        setImg={setImg}
-                      />
-                    </>
-                  ) : (
-                    <h3 className="no_conv">Select a user to start conversation</h3>
-                  )
+        
 
         }     
          
