@@ -177,9 +177,7 @@ const GroupChat = () => {
                                     <button onClick={()=>addNewGroup()}>Add Group</button>
                             </div>
                 </div>:null
-            }
-           
-           <input type="text" value = {username} onChange={(e)=>setvalu(e)} />  
+            }  
         </div>
     </>
   );

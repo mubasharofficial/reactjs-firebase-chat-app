@@ -7,6 +7,7 @@ import iphoneNotificationBell from '../assets/noteficationsbells/iphone_sms_bell
 const User = ({ user1, user, selectUser, chat }) => {
   const user2 = user?.uid;
   const [data, setData] = useState("");
+
   useEffect(() => {
     const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
     let unsub = onSnapshot(doc(db, "lastMsg", id), (doc) => 
@@ -21,8 +22,9 @@ const User = ({ user1, user, selectUser, chat }) => {
     audio.play();
   }
 
-  return (
-    <>
+  if(data?.from==user1)
+  {
+  return (<>
       <div className={`user_wrapper ${chat.name === user.name && "selected_user"}`}
         onClick={() => selectUser(user)}  >
         <div className="user_info">
@@ -56,8 +58,12 @@ const User = ({ user1, user, selectUser, chat }) => {
           className="avatar sm_screen"
         />
       </div>
-    </>
-  );
+    </>);
+  
+  }
+  else{
+    return (<></>);
+  }
 };
 
 export default User;

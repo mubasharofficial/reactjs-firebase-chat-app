@@ -17,7 +17,6 @@ import {
   getDocFromCache,
 }
 from "firebase/firestore";
-
 import { ref, getDownloadURL, uploadBytes,uploadBytesResumable } from "firebase/storage";
 import { v4 as uuid } from 'uuid';
 import User from "../components/User";
@@ -27,7 +26,7 @@ import MessageForm from "../components/MessageForm";
 import Message from "../components/Message";
 import GroupMessage from "../components/GroupMessage";
 import groupImage from '../assets/group.png';
-import iphoneNotificationBell from '../assets/noteficationsbells/iphone_sms_bell.mp3';
+import Search from '../components/Search';
 
 const Home = () => {
   const [CurrenUserData,setCurrenUserData] =  useState();
@@ -46,7 +45,7 @@ const Home = () => {
   useEffect(() => {
     const usersRef = collection(db, "groupchat");
     // create query object
-    const q = query(usersRef, where("id", "not-in", ['ba68e485-ac05-1111-b0e3-ce4ac4e31ead']));
+    const q = query(usersRef, where("id", "not-in", ['ba68e485-ac05-1111-b0e3-12312312312']));
     // execute query
     const unsub = onSnapshot(q, (querySnapshot) => {
       let users = [];
@@ -73,14 +72,9 @@ const Home = () => {
     return () => unsub();
   }, []);
 
-  const playBell=(url)=>{
-
-    const audio = new Audio(url);
-    audio.play();
-  }
-
   const selectUser = async (user) =>
   {
+
   setChat(user);
     const user2 = user.uid;
     const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
@@ -123,11 +117,7 @@ const Home = () => {
     return () => unsub();
    
     };
-  
-    // for (const [key, value] of Object.entries(chatGroups)) {
-    //   console.log(value);
-    // }
-    
+      
   const handleSubmit = async (e) => 
   {
      e.preventDefault();
@@ -253,8 +243,8 @@ function userExists(username,groupMemberarray) {
     <div className="home_container">
       <div className="users_container">
         <GroupChat />
+        <Search selectUser={selectUser} chat={chat}  user1={user1}/>
         {users.map((user) => (
-
           <User
             key={user.uid}
             user={user}
@@ -317,7 +307,6 @@ function userExists(username,groupMemberarray) {
                   ))
                 : null}
             </div>
-            <button onClick={()=>playBell(iphoneNotificationBell)}>bell test</button>
             <MessageForm
               handleSubmit={handleSend}
               text={text}
