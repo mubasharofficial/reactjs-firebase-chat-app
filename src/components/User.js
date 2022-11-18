@@ -10,22 +10,43 @@ const User = ({ user1, user, selectUser, chat }) => {
 
   useEffect(() => {
     const id = user1 > user2 ? `${user1 + user2}` : `${user2 + user1}`;
-    let unsub = onSnapshot(doc(db, "lastMsg", id), (doc) => 
-    {
+    let unsub = onSnapshot(doc(db, "lastMsg", id), (doc) => {
       setData(doc.data());
     });
 
     return () => unsub();
   }, []);
-  const playBell=(url)=>{
+  const playBell = (url) => {
     const audio = new Audio(url);
     audio.play();
   }
 
-  if(data?.from==user1)
-  {
-  return (<>
-      <div className={`user_wrapper ${chat.name === user.name && "selected_user"}`}
+  console.log('currtn user',data)
+  if (data?.from == user1) {
+    return (<>
+      <a onClick={() => selectUser(user)} className="flex items-center px-4 py-3 text-lg text-gray-300 transition duration-150 ease-in-out cursor-pointer hover:bg-gray-100 focus:outline-none focus:bg-violet-500 focus:text-white active:bg-violet-600">
+        <div className="relative mr-2">
+          <img src={user.avatar || Img} alt="" width="64" height="64" className="rounded-full border-2"/>
+          <span className= {`${user.isOnline ? "bg-green-400" : "bg-red-500"} avatar-status-online avatar-status-xl absolute bg-green-400 w-3 h-3 rounded-full bottom-0 right-0 border-2 border-white`}></span>
+        </div>
+        <div className="w-full pb-2">
+          <div className="flex justify-between">
+          {data?.from != user1 && data?.unread?playBell(iphoneNotificationBell):null}
+            <span className="block ml-2 font-semibold text-gray-500 focus:text-white">{user.name}</span>
+            <span className="block ml-2 text-sm text-gray-300 focus:text-white">11:38 AM</span>
+          </div>
+          <span className="block ml-2 text-lg text-gray-300 focus:text-white">
+            <strong>{data.from === user1 ? "Me:" : null}</strong>&nbsp;
+            {data?.from !== user1 && data?.unread && 
+                  (<small className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75">New</small> )
+            }
+          </span>
+        </div>
+      </a>
+
+    
+
+      {/* <div className={`user_wrapper ${chat.name === user.name && "selected_user"}`}
         onClick={() => selectUser(user)}  >
         <div className="user_info">
           <div className="user_detail">
@@ -48,6 +69,7 @@ const User = ({ user1, user, selectUser, chat }) => {
           </p>
         )}
       </div>
+      
       <div
         onClick={() => selectUser(user)}
         className={`sm_container ${chat.name === user.name && "selected_user"}`}
@@ -57,11 +79,12 @@ const User = ({ user1, user, selectUser, chat }) => {
           alt="avatar"
           className="avatar sm_screen"
         />
-      </div>
+      </div> */}
+
     </>);
-  
+
   }
-  else{
+  else {
     return (<></>);
   }
 };

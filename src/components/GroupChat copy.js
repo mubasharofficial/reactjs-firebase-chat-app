@@ -82,7 +82,9 @@ const GroupChat = () => {
             .then(  (willCreate)=> {
               if (willCreate) 
                 {
+
                 swal("Poof! Your Group '"+value+"' Created Successfully!",{icon: "success",});
+                setSearchBoxSatus(true)
                 createNewChatDocument(value);
 
               } else {
@@ -90,7 +92,6 @@ const GroupChat = () => {
               }
             });
         });
-        setSearchBoxSatus(false);
   }
   const handleFireBaseSearch = async (name) => {
     const ref = collection(db, "users");
@@ -148,17 +149,19 @@ const GroupChat = () => {
 
   return (
     <>
-            <div className="p-3 d-flex justify-content-center   border-b-2 border-indigo-200">
-            <button></button>
-            <button onClick={()=>searchBoxStatus?setSearchBoxSatus(false):setSearchBoxSatus(true)}><svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"></path></svg></button>
+            <div className="d-flex justify-content-between user-chat-head  jext-justify p-3">
+            <button> <i className="fa fa-user" aria-hidden="true"></i> </button>
+            <button><i className="fa-solid fa-bell"></i></button>
+            <button onClick={()=>searchBoxStatus?setSearchBoxSatus(false):setSearchBoxSatus(true)}><i className="fa-solid fa-message"></i></button>
           </div>
-          
+         
           <div>
             {
               searchBoxStatus?
-              <div className=" pt-3">
-                            <div className="d-flex justify-content-center pb-2">
-                              <button  className="btn" onClick={()=>searchBoxStatus?setSearchBoxSatus(false):setSearchBoxSatus(true)}><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
+              <div className="add-group-memeber-section pt-3">
+                            <div className="d-flex justify-content-between user-chat-head  jext-justify p-3">
+                              <button onClick={()=>searchBoxStatus?setSearchBoxSatus(false):setSearchBoxSatus(true)}><i class="fa fa-arrow-left" aria-hidden="true"></i></button>
+                              <button onClick={()=>searchBoxStatus?setSearchBoxSatus(false):setSearchBoxSatus(true)}><i class="fa fa-users" aria-hidden="true"></i></button>
                             </div>
                                     <div className='group-search-form'>    
                                     <div className="user-search-dropdown-container">
@@ -170,12 +173,8 @@ const GroupChat = () => {
                                                     isSearchable={true}
                                                     isMulti
                                                 />
-                                    </div>
-                                    <div className="d-flex justify-content-center p-2">
-                                    <button className="btn" onClick={()=>addNewGroup()}><svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M8 9a3 3 0 100-6 3 3 0 000 6zM8 11a6 6 0 016 6H2a6 6 0 016-6zM16 7a1 1 0 10-2 0v1h-1a1 1 0 100 2h1v1a1 1 0 102 0v-1h1a1 1 0 100-2h-1V7z"></path></svg></button>
-                                    
-                                    </div>
-                                    
+                                    </div><br/>
+                                    <button onClick={()=>addNewGroup()}>Add Group</button>
                             </div>
                 </div>:null
             }  
