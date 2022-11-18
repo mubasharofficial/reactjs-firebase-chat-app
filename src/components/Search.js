@@ -13,16 +13,13 @@ import {
 import Img from "../image1.jpg";
 import { db, auth } from "../firebase";
 
-const Search = ({selectUser}) => {
+const Search = ({selectUser,setFindUser}) => {
   const [username, setUsername] = useState("");
   const [user, setUser] = useState(null);
   const [err, setErr] = useState(false);
-
-  const  currentUser  = auth.currentUser.uid;
   const handleSearch = async () =>
    {
 
-    console.log('fetch user',username);
     const q = query(
       collection(db, "users"),
       where("name", "==", username),
@@ -36,7 +33,9 @@ const Search = ({selectUser}) => {
     } catch (err) {
       setErr(true);
     }
+  setFindUser(user)
   };
+
 
   const handleKey = (e) => 
   {
@@ -60,24 +59,9 @@ const Search = ({selectUser}) => {
                         required />
                   </div>
                 </div>
-                
+                <div className="">
                   {err && <span>User not found!</span>}
-                    {
-                    user &&
-                    user?.uid!=currentUser?
-                      (
-                      <div className="d-flex justify-content-around bg-white mt-1 mb-1 p-2 border border-primary" onClick={()=>{
-                        selectUser(user);
-                        setUsername("");
-                        setUser(null);
-                      }}>
-                        <img src=
-                        {user.avatar || Img}  alt="" width='60' height='60'  style={{borderRadius:"50%"}} />
-                          <h6 className="mt-2">{user.name}</h6>
-                      </div>
-                    ):null
-
-                    }
+                </div>    
               </>
     );
 };

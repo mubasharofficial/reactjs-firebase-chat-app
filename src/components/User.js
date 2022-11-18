@@ -21,8 +21,7 @@ const User = ({ user1, user, selectUser, chat }) => {
     audio.play();
   }
 
-  console.log('currtn user',data)
-  if (data?.from == user1) {
+  if (data?.from == user1 || data?.to==user1) {
     return (<>
       <a onClick={() => selectUser(user)} className="flex items-center px-4 py-3 text-lg text-gray-300 transition duration-150 ease-in-out cursor-pointer hover:bg-gray-100 focus:outline-none focus:bg-violet-500 focus:text-white active:bg-violet-600">
         <div className="relative mr-2">
@@ -35,11 +34,17 @@ const User = ({ user1, user, selectUser, chat }) => {
             <span className="block ml-2 font-semibold text-gray-500 focus:text-white">{user.name}</span>
             <span className="block ml-2 text-sm text-gray-300 focus:text-white">11:38 AM</span>
           </div>
+          {data?.from !== user1 && data?.unread && 
+                  (
+                  <div className="-mt-8 -ml-8">
+                      <small className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-red-400 opacity-100">
+                      <small>New</small>
+                      </small>
+                  </div> 
+                  )
+            }
           <span className="block ml-2 text-lg text-gray-300 focus:text-white">
             <strong>{data.from === user1 ? "Me:" : null}</strong>&nbsp;
-            {data?.from !== user1 && data?.unread && 
-                  (<small className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75">New</small> )
-            }
           </span>
         </div>
       </a>
